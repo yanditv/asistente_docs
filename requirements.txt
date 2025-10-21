@@ -1,0 +1,50 @@
+# ========================================
+# CORE AI/ML DEPENDENCIES
+# ========================================
+# LangChain ecosystem for RAG
+langchain==0.1.20
+langchain-community==0.0.38
+langchain-openai==0.1.7
+
+# Vector database and search
+faiss-cpu==1.8.0
+sentence-transformers==2.7.0
+
+# PDF processing
+pypdf==4.2.0
+
+# Text processing and tokenization
+tiktoken==0.7.0
+
+# ========================================
+# API SERVER DEPENDENCIES
+# ========================================
+# FastAPI web framework
+fastapi==0.111.0
+uvicorn[standard]==0.29.0
+pydantic==2.7.0
+
+# HTTP client for external APIs
+httpx==0.27.0
+
+# File handling and CORS
+python-multipart==0.0.9
+aiofiles==23.2.1
+
+# ========================================
+# CORE PYTHON DEPENDENCIES
+# ========================================
+# Essential packages (often auto-installed but explicit for clarity)
+numpy>=1.24.0,<2.0.0
+typing-extensions>=4.0.0
+
+# ========================================
+# OPTIONAL/DEVELOPMENT DEPENDENCIES
+# ========================================
+# For testing the API
+requests==2.32.0
+
+# Note: Standard library modules used (no additional requirements):
+# - http.server, socketserver (web_server.py)
+# - os, asyncio, pickle, hashlib, json, pathlib, datetime
+# - threading, time, webbrowser

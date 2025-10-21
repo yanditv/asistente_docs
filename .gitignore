@@ -1,0 +1,105 @@
+# ========================================
+# RUNTIME DATA (REGENERATED AUTOMATICALLY)
+# ========================================
+# Vector databases - se recrean automáticamente por cada documento
+vector_dbs/
+# Cache de metadatos y embeddings
+cache/
+# Documentos subidos por usuarios
+uploads/
+
+# ========================================
+# PYTHON CACHE AND COMPILED FILES
+# ========================================
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# ========================================
+# VIRTUAL ENVIRONMENTS
+# ========================================
+.venv/
+venv/
+ENV/
+env/
+
+# ========================================
+# IDE AND EDITOR FILES
+# ========================================
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# ========================================
+# LOGS AND TEMPORARY FILES
+# ========================================
+*.log
+*.tmp
+*.temp
+.cache/
+
+# ========================================
+# API KEYS AND SECRETS
+# ========================================
+.env
+.env.local
+.env.production
+.env.staging
+*_key.txt
+*_secret.txt
+secrets.json
+
+# ========================================
+# OPERATING SYSTEM FILES
+# ========================================
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+# Linux
+.directory
+
+# ========================================
+# MODEL AND LARGE FILES (OPTIONAL)
+# ========================================
+# Uncomment if you want to ignore downloaded models
+# .cache/huggingface/
+# models/
+
+# ========================================
+# USER DOCUMENTS (KEEP SOME FOR DEMO)
+# ========================================
+# Ignore user PDFs but keep demo files
+*.pdf
+# But keep demo/example files (uncomment if needed)
+# !manual.pdf
+# !example.pdf
