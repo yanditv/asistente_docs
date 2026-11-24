@@ -1,156 +1,62 @@
 # Asistente de Documentos
 
-Una aplicación completa para realizar consultas inteligentes en documentos PDF usando inteligencia artificial **100% gratuita**.
+Sube PDFs y hazles preguntas. Las respuestas salen solo de tus documentos e indican el archivo y la página de donde vienen.
 
-## 🎯 Características
+- **Embeddings locales** (HuggingFace `all-MiniLM-L6-v2`) e índice **FAISS** guardado en disco: cada PDF se indexa una sola vez.
+- **Respuestas con la API de OpenAI** (por defecto `gpt-4o-mini`).
+- **Interfaz web** servida por la misma API en http://localhost:8000.
 
-- ✅ **100% Gratuito** - Usa DeepSeek R1 y HuggingFace embeddings
-- 🚀 **Súper Rápido** - Caché inteligente y persistencia de embeddings
-- 📚 **Multi-documento** - Carga y consulta múltiples PDFs simultáneamente
-- 🔒 **Privado** - Todo se procesa localmente
-- 🌐 **API REST** - Fácil integración con cualquier aplicación
-- 📱 **Interfaz Web** - Cliente web incluido para uso inmediato
+## Inicio rápido
 
-## 📁 Estructura del Proyecto
-
-```
-asistente_docs/
-├── src/                          # Código fuente principal
-│   ├── api/                      # FastAPI application
-│   │   ├── app.py               # Configuración de la app
-│   │   └── routes.py            # Endpoints de la API
-│   ├── core/                    # Lógica de negocio central
-│   │   ├── config.py            # Configuración global
-│   │   ├── document_processor.py # Procesamiento de PDFs
-│   │   └── vector_store.py      # Gestión de vectores
-│   └── models/                  # Modelos y schemas
-│       ├── llm.py              # Modelo LLM personalizado
-│       └── schemas.py          # Schemas Pydantic
-├── frontend/                    # Interfaz web
-│   ├── web_client.html         # Cliente web principal
-│   └── web_server.py           # Servidor web simple
-├── scripts/                     # Scripts utilitarios
-│   └── start_all.py            # Iniciador automático
-├── docs/                       # Documentación
-├── data/                       # Datos generados (ignorado en Git)
-│   ├── uploads/                # PDFs subidos
-│   ├── vector_dbs/             # Bases de datos vectoriales
-│   └── cache/                  # Cache de metadatos
-├── main.py                     # Punto de entrada principal
-└── requirements.txt            # Dependencias
-```
-
-## 🚀 Inicio Rápido
-
-### 1. Instalar dependencias
+Requiere Python 3.11 (langchain 0.1 no es compatible con Python 3.12.4+).
 
 ```bash
-pip install -r requirements.txt
+uv venv -p 3.11 .venv
+uv pip install -p .venv -r requirements.txt
+
+cp .env.example .env          # y pon tu OPENAI_API_KEY
+.venv/bin/python main.py
 ```
 
-### 2. Ejecutar la aplicación
+Abre http://localhost:8000. La primera subida descarga el modelo de embeddings (~90 MB).
 
-**Opción A: Inicio automático (recomendado)**
+Sin clave la app arranca igual: puedes subir documentos y la interfaz te avisa de que falta la clave.
+
+## Configuración (`.env`)
+
+| Variable | Por defecto | Uso |
+|---|---|---|
+| `OPENAI_API_KEY` | — | Obligatoria para preguntar |
+| `OPENAI_MODEL` | `gpt-4o-mini` | Modelo de chat de OpenAI |
+
+El resto (tamaño de fragmento, puertos, rutas) está en `src/core/config.py`.
+
+## API
+
+Documentación interactiva en http://localhost:8000/docs.
+
+| Método | Ruta | Qué hace |
+|---|---|---|
+| `POST` | `/upload` | Sube e indexa un PDF (`multipart`, campo `file`) |
+| `POST` | `/query` | `{"question": "...", "doc_ids": [..] \| null}` → respuesta + citas con página |
+| `GET` | `/documents` | Lista los documentos indexados |
+| `DELETE` | `/documents/{id}` | Elimina un documento y su índice |
+| `GET` | `/health` | Estado, modelo y si la clave está configurada |
+
 ```bash
-python scripts/start_all.py
+curl -F "file=@contrato.pdf" localhost:8000/upload
+curl -H 'Content-Type: application/json' -d '{"question":"¿Cuál es el plazo?"}' localhost:8000/query
 ```
 
-**Opción B: Solo API**
-```bash
-python main.py
+## Estructura
+
+```
+main.py                     arranca uvicorn
+frontend/index.html         interfaz web (HTML + CSS + JS, sin build)
+src/api/                    FastAPI: app y rutas
+src/core/                   configuración, procesado de PDF, gestión de FAISS
+src/models/                 schemas Pydantic; llm.py = cliente Ollama alternativo
+data/                       subidas, índices y metadatos (ignorado en git)
 ```
 
-
-### 3. Usar la interfaz web
-
-- Automáticamente se abre en: http://localhost:3000/web_client.html
-- O accede manualmente a la URL
-
-### 4. Documentación de la API
-
-- Documentación interactiva: http://localhost:8000/docs
-- API REST: http://localhost:8000
-
-## 📝 Uso de la API
-
-### Cargar documento
-```bash
-curl -X POST "http://localhost:8000/upload" \\
-  -F "file=@documento.pdf"
-```
-
-### Realizar consulta
-```bash
-curl -X POST "http://localhost:8000/query" \\
-  -H "Content-Type: application/json" \\
-  -d '{"question": "¿Cuál es el tema principal?"}'
-```
-
-### Listar documentos
-```bash
-curl "http://localhost:8000/documents"
-```
-
-## Configuración
-
-La configuración se gestiona desde `src/core/config.py`:
-
-- **Puertos**: API (8000), Web (3000)
-- **Modelos**: LLM y embeddings
-- **Directorios**: Datos y cache
-- **Parámetros**: Chunks, temperatura, etc.
-
-## Arquitectura
-
-### Capas de la Aplicación
-
-1. **API Layer** (`src/api/`): FastAPI routes y middleware
-2. **Core Layer** (`src/core/`): Lógica de negocio y procesamiento
-3. **Models Layer** (`src/models/`): Schemas y modelos de datos
-4. **Frontend Layer** (`frontend/`): Interfaz web
-
-### Flujo de Datos
-
-1. **Upload**: PDF → DocumentProcessor → VectorStore → Cache
-2. **Query**: Pregunta → VectorStore → LLM → Respuesta
-3. **Storage**: Datos persistentes en `data/`
-
-## Desarrollo
-
-### Estructura Modular
-
-- **Separación de responsabilidades**: Cada módulo tiene una función específica
-- **Configuración centralizada**: Todo en `config.py`
-- **Reutilización**: Componentes independientes y testeable
-- **Escalabilidad**: Fácil agregar nuevas características
-
-### Agregar Nuevas Funcionalidades
-
-1. **Nuevo endpoint**: Agregar en `src/api/routes.py`
-2. **Nueva lógica**: Crear en `src/core/`
-3. **Nuevo modelo**: Definir en `src/models/schemas.py`
-4. **Nueva configuración**: Añadir en `src/core/config.py`
-
-## Scripts Disponibles
-
-- `main.py`: Inicia solo la API REST
-- `scripts/start_all.py`: Inicia API + interfaz web
-
-## Dependencias Principales
-
-- **FastAPI**: Framework web moderno
-- **LangChain**: Framework para aplicaciones LLM
-- **FAISS**: Base de datos vectorial
-- **HuggingFace**: Embeddings gratuitos
-- **sentence-transformers**: Modelos de embeddings
-
-## Listo para usar
-
-Tu asistente de documentos está completamente configurado y optimizado para consultas inteligentes súper rápidas y completamente gratuitas! 🚀
-
-### Próximos pasos:
-
-1. Sube tus documentos PDF
-2. Realiza consultas inteligentes
-3. Explora la API REST
-4. Personaliza según tus necesidades
+Para volver a un modelo local, `src/models/llm.py` tiene un cliente para Ollama (`localhost:11434`); basta con usarlo en `get_llm()` de `src/api/routes.py`.

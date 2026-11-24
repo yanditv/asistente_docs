@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import List, Optional
 
 from langchain_community.document_loaders import PyPDFLoader
-from langchain.text_splitter import CharacterTextSplitter
+from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.schema import Document
 
 from .config import settings
@@ -15,7 +15,7 @@ class DocumentProcessor:
     """Handles PDF loading and text processing"""
 
     def __init__(self):
-        self.text_splitter = CharacterTextSplitter(
+        self.text_splitter = RecursiveCharacterTextSplitter(
             chunk_size=settings.CHUNK_SIZE,
             chunk_overlap=settings.CHUNK_OVERLAP
         )

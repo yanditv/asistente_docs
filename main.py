@@ -11,7 +11,7 @@ from src.core.config import settings
 def main():
     """Main entry point for the application"""
     print("Iniciando Asistente de Documentos...")
-    print(f"API disponible en: http://{settings.API_HOST}:{settings.API_PORT}")
+    print(f"Interfaz web: http://{settings.API_HOST}:{settings.API_PORT}")
     print(f"Documentación en: http://{settings.API_HOST}:{settings.API_PORT}/docs")
     print()
 

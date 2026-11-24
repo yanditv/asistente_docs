@@ -10,10 +10,17 @@ class QueryRequest(BaseModel):
     question: str = Field(..., min_length=1, description="The question to ask about the documents")
     doc_ids: Optional[List[str]] = Field(None, description="Specific document IDs to query (if None, query all)")
 
+class Citation(BaseModel):
+    """A retrieved passage that backs an answer"""
+    filename: str = Field(..., description="Source document filename")
+    page: Optional[int] = Field(None, description="1-based page number, if known")
+    snippet: str = Field(..., description="Excerpt of the retrieved passage")
+
 class QueryResponse(BaseModel):
     """Response schema for document queries"""
     answer: str = Field(..., description="The answer to the question")
     sources: List[str] = Field(default_factory=list, description="Source documents used")
+    citations: List[Citation] = Field(default_factory=list, description="Retrieved passages with page numbers")
     doc_count: int = Field(..., description="Number of documents searched")
     processing_time: float = Field(..., description="Time taken to process the query in seconds")
 
@@ -29,6 +36,7 @@ class DocumentInfo(BaseModel):
     """Schema for document information"""
     id: str = Field(..., description="Document unique identifier")
     filename: str = Field(..., description="Original filename")
+    folder: Optional[str] = Field(None, description="Folder the document was imported from, if any")
     created_at: str = Field(..., description="ISO timestamp when document was processed")
     num_chunks: int = Field(..., description="Number of text chunks")
     total_chars: int = Field(..., description="Total character count")

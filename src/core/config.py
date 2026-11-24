@@ -5,7 +5,10 @@ import os
 from pathlib import Path
 from typing import Dict, Any
 
-# Environment setup
+from dotenv import load_dotenv
+
+# Environment setup: OPENAI_API_KEY / OPENAI_MODEL can live in the project's .env
+load_dotenv(Path(__file__).parent.parent.parent / ".env")
 os.environ['TOKENIZERS_PARALLELISM'] = 'false'
 
 class Settings:
@@ -13,7 +16,8 @@ class Settings:
 
     # API Configuration
     LOCAL_API_URL: str = "http://localhost:11434/api/chat"
-    DEFAULT_MODEL: str = "gpt-oss:20b"
+    # ponytail: OpenAI via OPENAI_API_KEY env; LocalAPILLM (Ollama) kept in src/models/llm.py to switch back
+    DEFAULT_MODEL: str = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
 
     # Server Configuration
     API_HOST: str = "localhost"

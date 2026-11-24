@@ -63,7 +63,7 @@ class VectorStoreManager:
         """Check if a document's vector store already exists"""
         return self._get_vector_db_path(doc_id).exists()
 
-    def create_vector_store(self, doc_id: str, documents: List[Document], filename: str) -> FAISS:
+    def create_vector_store(self, doc_id: str, documents: List[Document], filename: str, folder: Optional[str] = None) -> FAISS:
         """Create and save a new vector store for documents"""
         embeddings = self.get_embeddings()
 
@@ -76,6 +76,7 @@ class VectorStoreManager:
         # Update metadata
         self._metadata_cache[doc_id] = {
             "filename": filename,
+            "folder": folder,
             "created_at": datetime.now().isoformat(),
             "num_chunks": len(documents),
             "total_chars": sum(len(doc.page_content) for doc in documents)
@@ -143,12 +144,19 @@ class VectorStoreManager:
             result.append({
                 "id": doc_id,
                 "filename": metadata.get("filename", "Unknown"),
+                "folder": metadata.get("folder"),
                 "created_at": metadata.get("created_at", "Unknown"),
                 "num_chunks": metadata.get("num_chunks", 0),
                 "total_chars": metadata.get("total_chars", 0),
                 "exists": self.document_exists(doc_id)
             })
         return sorted(result, key=lambda x: x.get("created_at", ""), reverse=True)
+
+    def set_folder(self, doc_id: str, folder: Optional[str]) -> None:
+        """Move an already indexed document into a folder (re-uploads keep the latest folder)"""
+        if doc_id in self._metadata_cache and folder:
+            self._metadata_cache[doc_id]["folder"] = folder
+            self._save_metadata()
 
     def get_document_metadata(self, doc_id: str) -> Optional[Dict]:
         """Get metadata for a specific document"""

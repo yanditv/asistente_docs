@@ -15,11 +15,9 @@ def create_app() -> FastAPI:
         description="""
         Una API REST completa para cargar documentos PDF y realizar consultas inteligentes.
 
-        **Características:**
-        - 100% Gratuito usando DeepSeek R1 y HuggingFace embeddings
-        - Súper Rápido con caché inteligente y persistencia
-        - Multi-documento - carga y consulta múltiples PDFs
-        - Privado - todo se procesa localmente
+        - Embeddings locales (HuggingFace) e índice FAISS persistente en disco
+        - Respuestas generadas con la API de OpenAI, con citas por página
+        - Interfaz web en `/`
         """,
         version="1.0.0",
         docs_url="/docs",
